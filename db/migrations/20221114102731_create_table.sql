@@ -12,15 +12,17 @@ CREATE TABLE `user` (
 
 CREATE TABLE `movie` (
     `id` int PRIMARY KEY AUTO_INCREMENT,
-    `title` varchar(50) COMMENT '영화 제목',
+    `ko_title` varchar(50) COMMENT '영화 제목',
+    `en_title` varchar(100),
     `description` varchar(1000) COMMENT '영화 설명',
     `viewer` int COMMENT '누적 관람수',
     `movie_time` int COMMENT '영화 시간',
-    `director` varchar(10) COMMENT '감독',
+    `director` varchar(20) COMMENT '감독',
     `grade` varchar(20) COMMENT '영화 관람 등급',
     `actors` varchar(300) COMMENT '배우들',
     `genre` varchar(300) COMMENT '장르',
-    `release_date` datetime
+    `release_date` datetime,
+    `movie_poster` varchar(200)
 );
 
 CREATE TABLE `movie_type` (
@@ -72,10 +74,10 @@ CREATE TABLE `booking_canceled_record` (
     `booking_record_id` int
 );
 
-CREATE TABLE `region` (
+CREATE TABLE `cinema` (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `location_id` int,
-    `region_name` varchar(50) COMMENT 'ex) 강남, 강동'
+    `cinema_name` varchar(50) COMMENT 'ex) 강남, 강동'
 );
 
 CREATE TABLE `location` (
@@ -83,11 +85,6 @@ CREATE TABLE `location` (
     `location_name` varchar(50) COMMENT 'ex) 서울, 경기'
 );
 
-CREATE TABlE `cinema` (
-    `id` int PRIMARY KEY AUTO_INCREMENT,
-    `location_id` int,
-    `showtime_id` int
-);
 
 CREATE TABLE `movie_cinema` (
     `id` int PRIMARY KEY AUTO_INCREMENT,
@@ -97,8 +94,9 @@ CREATE TABLE `movie_cinema` (
 
 CREATE TABLE `showtime` (
     `id` int PRIMARY KEY AUTO_INCREMENT,
-    `day` datetime COMMENT '상영날짜',
-    `start_time` datetime COMMENT '상영 시작 시각'
+    `movie_cinema_id` int,
+    `screen` int,
+    `start_time` varchar(20) COMMENT '상영 시작 시각'
 );
 
 CREATE TABLE `showtime_seat` (
@@ -133,11 +131,9 @@ ALTER TABLE `booking_record` ADD FOREIGN KEY (`booking_id`) REFERENCES `booking`
 
 ALTER TABLE `booking_canceled_record` ADD FOREIGN KEY (`booking_record_id`) REFERENCES `booking_record` (`id`);
 
-ALTER TABLE `region` ADD FOREIGN KEY (`location_id`) REFERENCES `location` (`id`);
-
 ALTER TABLE `cinema` ADD FOREIGN KEY (`location_id`) REFERENCES `location` (`id`);
 
-ALTER TABLE `cinema` ADD FOREIGN KEY (`showtime_id`) REFERENCES `showtime` (`id`);
+ALTER TABLE `showtime` ADD FOREIGN KEY (`movie_cinema_id`) REFERENCES `movie_cinema` (`id`);
 
 ALTER TABLE `showtime_seat` ADD FOREIGN KEY (`showtime_id`) REFERENCES `showtime` (`id`);
 -- migrate:down
