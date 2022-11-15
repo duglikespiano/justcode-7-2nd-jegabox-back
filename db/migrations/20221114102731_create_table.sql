@@ -40,7 +40,7 @@ CREATE TABLE `like` (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `user_id` int COMMENT '유저 아이디',
     `movie_id` int COMMENT '영화 이름',
-    `created_at` timestamp default CURRENT_TIMESTAMP
+    `created_at` datetime default CURRENT_TIMESTAMP
 );
 
 CREATE TABLE `comment` (
@@ -85,7 +85,6 @@ CREATE TABLE `location` (
     `location_name` varchar(50) COMMENT 'ex) 서울, 경기'
 );
 
-
 CREATE TABLE `movie_cinema` (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `movie_id` int,
@@ -96,13 +95,15 @@ CREATE TABLE `showtime` (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `movie_cinema_id` int,
     `screen` int,
+    `movie_property` varchar(20),
     `start_time` varchar(20) COMMENT '상영 시작 시각'
 );
 
 CREATE TABLE `showtime_seat` (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `showtime_id` int,
-    `seat_id` int
+    `showtime_day` datetime,
+    `seat_name` varchar(10)
 );
 
 ALTER TABLE `movie_cinema` ADD FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`);
