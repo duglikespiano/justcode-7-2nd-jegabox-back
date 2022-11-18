@@ -9,7 +9,7 @@ const getMainMovies = async pagenation => {
     FROM movie 
     LEFT JOIN (SELECT movie_id, count(*) AS cnt FROM jegabox.like GROUP BY movie_id) AS lt ON movie.id = lt.movie_id 
     LEFT JOIN (SELECT movie_type.movie_id, JSON_ARRAYAGG(movie_type_properties.movie_type) AS type FROM movie_type LEFT JOIN movie_type_properties ON movie_type.movie_type_properties_id = movie_type_properties.id GROUP BY movie_type.movie_id) AS mtt ON movie.id = mtt.movie_id 
-    ORDER BY viewer
+    ORDER BY viewer DESC
     ${pagenation}
     `);
   return getMainMovies;
@@ -30,14 +30,22 @@ const getMainMovies = async pagenation => {
 // };
 
 const getAllMovies = async release => {
-  const getAllMovies = await myDataSource.query(`
-  SELECT movie.id, movie.ko_title, movie.movie_poster, movie.description, movie.viewer, movie.release_date, lt.cnt, mtt.type
+  const getAllMovies = await myDataSource
+    .query(
+      `
+  SELECT movie.id, movie.ko_title, movie.movie_poster, movie.like, movie.description, movie.viewer, movie.release_date, lt.cnt, mtt.type
   FROM movie
   LEFT JOIN (SELECT movie_id, count(*) AS cnt FROM jegabox.like GROUP BY movie_id) AS lt ON movie.id = lt.movie_id
   LEFT JOIN (SELECT movie_type.movie_id, JSON_ARRAYAGG(movie_type_properties.movie_type) AS type FROM movie_type LEFT JOIN movie_type_properties ON movie_type.movie_type_properties_id = movie_type_properties.id GROUP BY movie_type.movie_id) AS mtt ON movie.id = mtt.movie_id
   ${release}
-  ORDER BY viewer
-`);
+  ORDER BY viewer DESC
+`
+    )
+    .then(answer => {
+      return answer.map(item => {
+        return { ...item, cnt: Number(item.cnt) };
+      });
+    });
   return getAllMovies;
 };
 
@@ -57,7 +65,7 @@ const getAllMovies = async release => {
 
 const getComingsoonMovies = async sorted_by => {
   const comingsoonMovie = await myDataSource.query(`
-  SELECT movie.id, movie.ko_title, movie.movie_poster, movie.description, movie.viewer, movie.release_date, lt.cnt, mtt.type
+  SELECT movie.id, movie.ko_title, movie.movie_poster, movie.description, movie.like, movie.viewer as viewer, movie.release_date, lt.cnt as cnt, mtt.type
   FROM movie
   LEFT JOIN (SELECT movie_id, count(*) AS cnt FROM jegabox.like GROUP BY movie_id) AS lt ON movie.id = lt.movie_id
   LEFT JOIN (SELECT movie_type.movie_id, JSON_ARRAYAGG(movie_type_properties.movie_type) AS type FROM movie_type LEFT JOIN movie_type_properties ON movie_type.movie_type_properties_id = movie_type_properties.id GROUP BY movie_type.movie_id) AS mtt ON movie.id = mtt.movie_id
