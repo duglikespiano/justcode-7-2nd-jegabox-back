@@ -1,10 +1,11 @@
 -- migrate:up
 CREATE TABLE `user` (
     `id` int PRIMARY KEY AUTO_INCREMENT,
-    `birth` varchar(20) COMMENT '생년월일',
-    `phone_number` int(11) COMMENT '핸드폰 번호',
+    `name` varchar(30) COMMENT '이름',
+    `birthday` varchar(20) COMMENT '생년월일',
+    `phone_number` varchar(11) COMMENT '핸드폰 번호',
     `account_id` varchar(20) UNIQUE COMMENT '계정 아이디',
-    `password` varchar(20) COMMENT '패스워드',
+    `password` varchar(100) COMMENT '패스워드',
     `email` varchar(30) COMMENT '이메일',
     `profile_img` varchar(200) COMMENT '프로필 사진 주소',
     `created_at` datetime default CURRENT_TIMESTAMP
@@ -54,24 +55,30 @@ CREATE TABLE `comment` (
 CREATE TABLE `booking` (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `user_id` int,
-    `cinema_id` int
-);
-
-CREATE TABLE `booking_seat` (
-    `id` int PRIMARY KEY AUTO_INCREMENT,
-    `booking_id` int,
+    `showtime_id` int,
     `seat_count` int COMMENT '관람 인원',
-    `seat_id` int COMMENT '관람객석'
+    `seat_name` varchar(20) COMMENT '관람객석',
+    `ko_title` varchar(50),
+    `movie_poster` varchar(200),
+    `movie_property` varchar(20),
+    `cinema_name` varchar(50),
+    `screen` int,
+    `showtime_day` date,
+    `start_time` varchar(20),
+    `ticket_number` varchar(30),
+    `price` int,
+    `created_at` datetime default CURRENT_TIMESTAMP
 );
 
-CREATE TABLE `booking_record` (
+CREATE TABLE `canceled_booking` (
     `id` int PRIMARY KEY AUTO_INCREMENT,
-    `booking_id` int
-);
-
-CREATE TABLE `booking_canceled_record` (
-    `id` int PRIMARY KEY AUTO_INCREMENT,
-    `booking_record_id` int
+    `user_id` int,
+    `movie_title` varchar(50),
+    `cinema_name` varchar(50),
+    `showtime_day` date,
+    `start_time` varchar(50),
+    `price` int,
+    `created_at` datetime default CURRENT_TIMESTAMP
 );
 
 CREATE TABLE `cinema` (
@@ -96,14 +103,14 @@ CREATE TABLE `showtime` (
     `movie_cinema_id` int,
     `screen` int,
     `movie_property` varchar(20),
+    `showtime_day` date,
     `start_time` varchar(20) COMMENT '상영 시작 시각'
 );
 
 CREATE TABLE `showtime_seat` (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `showtime_id` int,
-    `showtime_day` datetime,
-    `seat_name` varchar(10)
+    `seat_name` varchar(20)
 );
 
 ALTER TABLE `movie_cinema` ADD FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`);
@@ -124,13 +131,7 @@ ALTER TABLE `comment` ADD FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`);
 
 ALTER TABLE `booking` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 
-ALTER TABLE `booking` ADD FOREIGN KEY (`cinema_id`) REFERENCES `cinema` (`id`);
-
-ALTER TABLE `booking_seat` ADD FOREIGN KEY (`booking_id`) REFERENCES `booking` (`id`);
-
-ALTER TABLE `booking_record` ADD FOREIGN KEY (`booking_id`) REFERENCES `booking` (`id`);
-
-ALTER TABLE `booking_canceled_record` ADD FOREIGN KEY (`booking_record_id`) REFERENCES `booking_record` (`id`);
+ALTER TABLE `booking` ADD FOREIGN KEY (`showtime_id`) REFERENCES `showtime` (`id`);
 
 ALTER TABLE `cinema` ADD FOREIGN KEY (`location_id`) REFERENCES `location` (`id`);
 
@@ -147,7 +148,6 @@ DROP TABLE `like`;
 DROP TABLE `comment`;
 DROP TABLE `booking`;
 DROP TABLE `booking_seat`;
-DROP TABLE `booking_record`;
 DROP TABLE `booking_canceled_record`;
 DROP TABLE `region`;
 DROP TABLE `location`;
