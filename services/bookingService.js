@@ -49,6 +49,7 @@ async function booking(showtime_id, seat_count, seat_name) {
 
   const movieInfo = await bookingDao.getMovieInfo(showtime_id);
   movieInfo.showtime_day = movieInfo.showtime_day.toISOString().split('T')[0];
+
   async function createRandNum(min, max) {
     let randNum = Math.floor(Math.random() * (max - min + 1)) + min;
     return randNum;
