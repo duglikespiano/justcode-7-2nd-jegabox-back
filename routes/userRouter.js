@@ -2,9 +2,6 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 
-//레이어 테스트용, 삭제 예정
-router.get('/ping', userController.pong);
-
 //회원가입API
 router.post('/signup', userController.signUp);
 
@@ -23,6 +20,9 @@ router.post('/password', userController.issueTokenTofindPassword);
 //비밀번호재설정API
 router.patch('/password', userController.resetPassword);
 
-// router.post('/check', userController.check);
+//레이어 테스트용, 삭제 예정
+router.get('/ping', userController.pong);
+router.post('/check', userController.check);
+router.post('/check2', userController.check2);
 
 module.exports = router;

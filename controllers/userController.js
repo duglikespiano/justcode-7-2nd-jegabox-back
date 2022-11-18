@@ -222,6 +222,41 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const nodeCache = require('node-Cache');
+const myCache = new nodeCache({ stdTTL: 5, checkperiod: 100 }); //<--캐쉬생성, ttl을 5초로 설정
+
+const check = async () => {
+  //난수 생성 함수
+  let randomNumber = 0;
+  let num = Math.random();
+  for (let i = 10; parseInt(num * i) < 1000000; i = i * 10) {
+    randomNumber = num * i;
+    randomNumber = parseInt(randomNumber);
+  }
+
+  let randomNumberObj = { randomNumber };
+  myCache.set('randomNumberObj', randomNumberObj);
+  console.log('check1 no timeout ', myCache.get('randomNumberObj'));
+  // myCache.del('myKey');
+
+  setTimeout(() => {
+    //<--timeout을 적용하여 삭제 여부를 확인
+    console.log('Delayed for 3 seconds');
+    console.log('check1 timeout 3sec', myCache.get('randomNumberObj'));
+  }, '3000');
+
+  setTimeout(() => {
+    //<--timeout을 적용하여 삭제 여부를 확인
+    console.log('Delayed for 6 seconds');
+    console.log('check1 timeout 6sec', myCache.get('randomNumberObj'));
+  }, '6000');
+};
+
+const check2 = async () => {
+  //<--캐시 저장값의 스코프 확인(set없이도 사용한지 확인)
+  console.log('check2 no timeout', myCache.get('randomNumberObj'));
+};
+
 module.exports = {
   pong,
   signUp,
@@ -230,4 +265,6 @@ module.exports = {
   findID,
   issueTokenTofindPassword,
   resetPassword,
+  check,
+  check2,
 };
