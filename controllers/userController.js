@@ -1,12 +1,6 @@
 const jwt = require('jsonwebtoken');
 const userService = require('../services/userService');
 
-const pong = async (req, res) => {
-  console.log('i am in userControl1');
-  await userDao.pong();
-  console.log('i am in userControl2');
-};
-
 //회원가입
 const signUp = async (req, res) => {
   try {
@@ -258,7 +252,6 @@ const check2 = async () => {
 };
 
 module.exports = {
-  pong,
   signUp,
   signIn,
   checkIfIDExists,
