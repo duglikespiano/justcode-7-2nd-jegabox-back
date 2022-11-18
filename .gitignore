@@ -241,3 +241,7 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,visualstudiocode,node
+/db*
+.env
+package.json
+package-lock.json

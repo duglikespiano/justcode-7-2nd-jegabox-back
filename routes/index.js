@@ -1,15 +1,17 @@
 const express = require('express');
 
-const user = require('./user');
-const bookingRoute = require('./bookingRouter');
+const bookingRouter = require('./bookingRouter');
 const mypageRouter = require('./mypageRouter');
-// const otherRouter = require('./other');
+const userRouter = require('./userRouter');
+const movieRouter = require('./movieRouter');
+const likesRouter = require('./likesRouter');
 
 const router = express.Router();
 
-router.use(user);
-router.use('/booking', bookingRoute);
+router.use('/booking', bookingRouter);
 router.use('/mypage', mypageRouter);
-// router.use(otherRouter);
+router.use('/users', userRouter);
+router.use('/movie', movieRouter);
+router.use('/likes', likesRouter);
 
 module.exports = router;
