@@ -21,7 +21,6 @@ router.post('/password', userController.issueTokenTofindPassword);
 router.patch('/password', userController.resetPassword);
 
 //레이어 테스트용, 삭제 예정
-router.get('/ping', userController.pong);
 router.post('/check', userController.check);
 router.post('/check2', userController.check2);
 

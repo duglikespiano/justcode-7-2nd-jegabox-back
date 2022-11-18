@@ -8,12 +8,6 @@ const numReg = /[0-9]/gi;
 const speReg = /[`₩~!@#$%^&*()_+{}:"<>?=\[/\]/;',.\|\-]/gi;
 const emailReg = /[a-zA-Z0-9\-_+=]+@[a-zA-Z0-9\-_+=]+[\.]+\w{2,}/gi;
 
-const pong = async (req, res) => {
-  console.log('i am in userService1');
-  await userDao.pong();
-  console.log('i am in userService2');
-};
-
 //회원가입
 const signUp = async (
   birthday,
@@ -281,7 +275,6 @@ const resetPassword = async (account_id, password, passwordForCheck) => {
 };
 
 module.exports = {
-  pong,
   signUp,
   signIn,
   checkIfIDExists,
