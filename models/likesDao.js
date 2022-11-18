@@ -1,14 +1,14 @@
-const myDataSource = require('./database');
+const database = require('./database');
 
 const addLikes = async (user_id, movie_id) => {
-  await myDataSource.query(`
+  await database.query(`
     INSERT INTO jegabox.like (user_id, movie_id)
     VALUES ("${user_id}", "${movie_id}")
   `);
 };
 
 const removelikes = async (user_id, movie_id) => {
-  await myDataSource.query(`
+  await database.query(`
   DELETE FROM jegabox.like
   WHERE user_id = ${user_id} && movie_id = ${movie_id}
   `);

@@ -10,6 +10,7 @@ const dataSource = new DataSource({
 });
 
 dataSource.initialize().then(() => {
+  // eslint-disable-next-line
   console.log('Data Source has been initialized!');
 });
 

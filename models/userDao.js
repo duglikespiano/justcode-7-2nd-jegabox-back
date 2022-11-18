@@ -1,21 +1,4 @@
-const bcrypt = require('bcryptjs');
-const { DataSource } = require('typeorm');
-const myDataSource = new DataSource({
-  type: process.env.TYPEORM_CONNECTION,
-  host: process.env.TYPEORM_HOST,
-  port: process.env.TYPEORM_PORT,
-  username: process.env.TYPEORM_USERNAME,
-  password: process.env.TYPEORM_PASSWORD,
-  database: process.env.TYPEORM_DATABASE,
-});
-
-myDataSource.initialize().then(() => {
-  console.log('Data Source has been initialized!');
-});
-
-const pong = async (req, res) => {
-  console.log('i am in userDao');
-};
+const database = require('./database');
 
 //회원가입
 const signUp = async (
@@ -26,7 +9,7 @@ const signUp = async (
   email,
   name
 ) => {
-  await myDataSource.query(`
+  await database.query(`
     INSERT INTO USER (birthday, phone_number, account_id, password, email, name)
     VALUES (
     '${birthday}', '${phone_number}', '${account_id}', '${hashed_password}', '${email}', '${name}'
@@ -36,7 +19,7 @@ const signUp = async (
 
 //ID로 사용자 찾기
 const userInDB = async account_id => {
-  const [userInDB] = await myDataSource.query(`
+  const [userInDB] = await database.query(`
     SELECT * FROM USER WHERE account_id = '${account_id}'
     `);
   return userInDB;
@@ -44,7 +27,7 @@ const userInDB = async account_id => {
 
 //전화번호 DB등록 여부 확인
 const checkIfPhoneNumberExists = async phone_number => {
-  const [userByPhoneNumber] = await myDataSource.query(`
+  const [userByPhoneNumber] = await database.query(`
     SELECT * FROM USER WHERE phone_number = '${phone_number}'
   `);
   return userByPhoneNumber;
@@ -52,7 +35,7 @@ const checkIfPhoneNumberExists = async phone_number => {
 
 //생일, 전화번호로 유저 찾기
 const IDInDB = async (name, birthday, phone_number) => {
-  const [userByPhoneNumber] = await myDataSource.query(`
+  const [userByPhoneNumber] = await database.query(`
     SELECT * FROM USER WHERE phone_number = '${phone_number}'
   `);
 
@@ -70,7 +53,7 @@ const IDInDB = async (name, birthday, phone_number) => {
 
 //비밀번호를 찾기위한 토큰 발행
 const issueTokenTofindPassword = async (account_id, name, phone_number) => {
-  const [findUserTofindPassword] = await myDataSource.query(`
+  const [findUserTofindPassword] = await database.query(`
   SELECT * FROM USER WHERE account_id = '${account_id}'AND name = '${name}' AND phone_number = '${phone_number}'
   `);
   return findUserTofindPassword;
@@ -80,7 +63,7 @@ const issueTokenTofindPassword = async (account_id, name, phone_number) => {
 const resetPassword = async (account_id, password, passwordForCheck) => {
   bcrypt.genSalt(10, (err, salt) => {
     bcrypt.hash(password, salt, (err, hash) => {
-      myDataSource.query(`
+      database.query(`
     UPDATE USER SET password = '${hash}' WHERE account_id ='${account_id}'
     `);
     });
@@ -88,7 +71,6 @@ const resetPassword = async (account_id, password, passwordForCheck) => {
 };
 
 module.exports = {
-  pong,
   signUp,
   userInDB,
   checkIfPhoneNumberExists,
