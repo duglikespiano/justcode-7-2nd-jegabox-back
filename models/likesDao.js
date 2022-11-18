@@ -1,4 +1,4 @@
-const myDataSource = require('./index');
+const myDataSource = require('./database');
 
 const addLikes = async (user_id, movie_id) => {
   await myDataSource.query(`
