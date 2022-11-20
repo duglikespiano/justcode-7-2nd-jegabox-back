@@ -18,59 +18,43 @@
 CREATE TABLE `booking` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int DEFAULT NULL,
-  `cinema_id` int DEFAULT NULL,
+  `showtime_id` int DEFAULT NULL,
+  `seat_count` int DEFAULT NULL COMMENT '관람 인원',
+  `seat_name` varchar(20) DEFAULT NULL COMMENT '관람객석',
+  `ko_title` varchar(50) DEFAULT NULL,
+  `movie_poster` varchar(200) DEFAULT NULL,
+  `movie_property` varchar(20) DEFAULT NULL,
+  `cinema_name` varchar(50) DEFAULT NULL,
+  `screen` int DEFAULT NULL,
+  `showtime_day` date DEFAULT NULL,
+  `start_time` varchar(20) DEFAULT NULL,
+  `ticket_number` varchar(30) DEFAULT NULL,
+  `price` int DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
-  KEY `cinema_id` (`cinema_id`),
+  KEY `showtime_id` (`showtime_id`),
   CONSTRAINT `booking_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
-  CONSTRAINT `booking_ibfk_2` FOREIGN KEY (`cinema_id`) REFERENCES `cinema` (`id`)
+  CONSTRAINT `booking_ibfk_2` FOREIGN KEY (`showtime_id`) REFERENCES `showtime` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `booking_canceled_record`
+-- Table structure for table `canceled_booking`
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `booking_canceled_record` (
+CREATE TABLE `canceled_booking` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `booking_record_id` int DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `booking_record_id` (`booking_record_id`),
-  CONSTRAINT `booking_canceled_record_ibfk_1` FOREIGN KEY (`booking_record_id`) REFERENCES `booking_record` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `booking_record`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `booking_record` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `booking_id` int DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `booking_id` (`booking_id`),
-  CONSTRAINT `booking_record_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `booking` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `booking_seat`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `booking_seat` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `booking_id` int DEFAULT NULL,
-  `seat_count` int DEFAULT NULL COMMENT '관람 인원',
-  `seat_id` int DEFAULT NULL COMMENT '관람객석',
-  PRIMARY KEY (`id`),
-  KEY `booking_id` (`booking_id`),
-  CONSTRAINT `booking_seat_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `booking` (`id`)
+  `user_id` int DEFAULT NULL,
+  `movie_title` varchar(50) DEFAULT NULL,
+  `cinema_name` varchar(50) DEFAULT NULL,
+  `showtime_day` date DEFAULT NULL,
+  `start_time` varchar(50) DEFAULT NULL,
+  `price` int DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -120,7 +104,7 @@ CREATE TABLE `like` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int DEFAULT NULL COMMENT '유저 아이디',
   `movie_id` int DEFAULT NULL COMMENT '영화 이름',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `movie_id` (`movie_id`),
@@ -161,6 +145,7 @@ CREATE TABLE `movie` (
   `genre` varchar(300) DEFAULT NULL COMMENT '장르',
   `release_date` datetime DEFAULT NULL,
   `movie_poster` varchar(200) DEFAULT NULL,
+  `like` int DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -236,11 +221,13 @@ CREATE TABLE `showtime` (
   `id` int NOT NULL AUTO_INCREMENT,
   `movie_cinema_id` int DEFAULT NULL,
   `screen` int DEFAULT NULL,
+  `movie_property` varchar(20) DEFAULT NULL,
+  `showtime_day` date DEFAULT NULL,
   `start_time` varchar(20) DEFAULT NULL COMMENT '상영 시작 시각',
   PRIMARY KEY (`id`),
   KEY `movie_cinema_id` (`movie_cinema_id`),
   CONSTRAINT `showtime_ibfk_1` FOREIGN KEY (`movie_cinema_id`) REFERENCES `movie_cinema` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=285 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=286 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -252,11 +239,11 @@ CREATE TABLE `showtime` (
 CREATE TABLE `showtime_seat` (
   `id` int NOT NULL AUTO_INCREMENT,
   `showtime_id` int DEFAULT NULL,
-  `seat_id` int DEFAULT NULL,
+  `seat_name` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `showtime_id` (`showtime_id`),
   CONSTRAINT `showtime_seat_ibfk_1` FOREIGN KEY (`showtime_id`) REFERENCES `showtime` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=141 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -267,14 +254,16 @@ CREATE TABLE `showtime_seat` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `birth` varchar(20) DEFAULT NULL COMMENT '생년월일',
-  `phone_number` int DEFAULT NULL COMMENT '핸드폰 번호',
-  `account_id` varchar(20) DEFAULT NULL COMMENT '계정 아이디',
-  `password` varchar(20) DEFAULT NULL COMMENT '패스워드',
-  `email` varchar(30) DEFAULT NULL COMMENT '이메일',
+  `name` varchar(45) DEFAULT NULL COMMENT '이름',
+  `birthday` varchar(20) NOT NULL COMMENT '생년월일',
+  `phone_number` varchar(20) NOT NULL COMMENT '핸드폰 번호',
+  `account_id` varchar(20) NOT NULL COMMENT '계정 아이디',
+  `password` varchar(100) NOT NULL COMMENT '패스워드',
+  `email` varchar(30) NOT NULL COMMENT '이메일',
   `profile_img` varchar(200) DEFAULT NULL COMMENT '프로필 사진 주소',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `phone_number` (`phone_number`),
   UNIQUE KEY `account_id` (`account_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
