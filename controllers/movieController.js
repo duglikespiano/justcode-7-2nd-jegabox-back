@@ -40,9 +40,15 @@ const searchText = async (req, res) => {
   const result = await movieService.searchText(searchText);
   res.status(200).json({ data: result });
 };
+const searchTitle = async (req, res) => {
+  const { searchText } = req.body;
+  const result = await movieService.searchText(searchText);
+  res.status(200).json({ data: result });
+};
 module.exports = {
   getMainMovies,
   getAllMovies,
   getComingsoonMovies,
   searchText,
+  searchTitle,
 };
