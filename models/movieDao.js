@@ -43,7 +43,7 @@ const getAllMovies = async release => {
     )
     .then(answer => {
       return answer.map(item => {
-        return {...item, cnt: Number(item.cnt) };
+        return { ...item, cnt: Number(item.cnt) };
       });
     });
   return getAllMovies;
@@ -75,4 +75,19 @@ const getComingsoonMovies = async sorted_by => {
   return comingsoonMovie;
 };
 
-module.exports = { getMainMovies, getAllMovies, getComingsoonMovies };
+const searchText = async searchText => {
+  const result = await database.query(`
+    SELECT movie.id, movie.ko_title, movie.movie_poster, movie.description, movie.viewer, lt.cnt, mtt.type 
+    FROM movie 
+    LEFT JOIN (SELECT movie_id, count(*) AS cnt FROM jegabox.like GROUP BY movie_id) AS lt ON movie.id = lt.movie_id 
+    LEFT JOIN (SELECT movie_type.movie_id, JSON_ARRAYAGG(movie_type_properties.movie_type) AS type FROM movie_type LEFT JOIN movie_type_properties ON movie_type.movie_type_properties_id = movie_type_properties.id GROUP BY movie_type.movie_id) AS mtt ON movie.id = mtt.movie_id 
+    WHERE  movie.ko_title like '%${searchText}%'
+        `);
+  return result;
+};
+module.exports = {
+  getMainMovies,
+  getAllMovies,
+  getComingsoonMovies,
+  searchText,
+};
