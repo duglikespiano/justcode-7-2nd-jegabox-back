@@ -1,9 +1,28 @@
 const movieDao = require('../models/movieDao');
+const jwt = require('jsonwebtoken');
 
-const getMainMovies = async () => {
-  const mainPagenation = 'LIMIT 4';
-  const mainMovies = await movieDao.getMainMovies(mainPagenation);
-  return mainMovies;
+const getMainMovies = async token => {
+  if (!token) {
+    const likecnt = `LEFT JOIN (SELECT movie_id, count(*) AS likeCnt FROM jegabox.like WHERE user_id = 0 GROUP BY movie_id) AS lct ON movie.id = lct.movie_id`;
+    const mainMovies = await movieDao.getMainMovies(likecnt);
+    mainMovies.forEach(unit => {
+      if (unit.likeCnt === null) {
+        unit.likeCnt = 0;
+      }
+    });
+    return mainMovies;
+  } else {
+    const user = jwt.verify(token, process.env.SECRET_KEY);
+    const user_id = user.id;
+    const likecnt = `LEFT JOIN (SELECT movie_id, count(*) AS likeCnt FROM jegabox.like WHERE user_id = ${user_id} GROUP BY movie_id) AS lct ON movie.id = lct.movie_id`;
+    const mainMovies = await movieDao.getMainMovies(likecnt);
+    mainMovies.forEach(unit => {
+      if (unit.likeCnt === null) {
+        unit.likeCnt = 0;
+      }
+    });
+    return mainMovies;
+  }
 };
 
 const getAllMovies = async released => {

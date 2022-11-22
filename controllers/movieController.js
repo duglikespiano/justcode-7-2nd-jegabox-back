@@ -1,7 +1,8 @@
 const movieService = require('../services/movieService');
 
 const getMainMovies = async (req, res) => {
-  const mainMovies = await movieService.getMainMovies();
+  const token = req.headers.authorization;
+  const mainMovies = await movieService.getMainMovies(token);
   res.status(200).json({ data: mainMovies });
 };
 

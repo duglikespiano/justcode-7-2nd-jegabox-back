@@ -61,10 +61,14 @@ const signIn = async (req, res) => {
 
     const userInDB = await userService.signIn(account_id, password);
     account_id = userInDB.account_id;
+    console.log(userInDB);
+    let id = userInDB.id;
+    console.log(id);
     token = jwt.sign(
       {
         type: 'JWT',
         account_id: account_id,
+        id: id,
       },
       process.env.SECRET_KEY,
       {

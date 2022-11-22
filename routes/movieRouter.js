@@ -1,4 +1,5 @@
 const express = require('express');
+const mw = require('../middleware/middleware');
 const router = express.Router();
 const controller = require('../controllers/movieController');
 
