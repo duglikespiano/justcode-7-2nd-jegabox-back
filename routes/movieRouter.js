@@ -1,9 +1,12 @@
 const express = require('express');
+const mw = require('../middleware/middleware');
 const router = express.Router();
 const controller = require('../controllers/movieController');
 
 router.get('/main', controller.getMainMovies);
 router.get('/list', controller.getAllMovies);
 router.get('/comingsoon', controller.getComingsoonMovies);
+router.get('/', controller.searchText);
+router.post('/', controller.searchTitle);
 
 module.exports = router;

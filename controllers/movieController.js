@@ -1,7 +1,8 @@
 const movieService = require('../services/movieService');
 
 const getMainMovies = async (req, res) => {
-  const mainMovies = await movieService.getMainMovies();
+  const token = req.headers.authorization;
+  const mainMovies = await movieService.getMainMovies(token);
   res.status(200).json({ data: mainMovies });
 };
 
@@ -34,4 +35,21 @@ const getComingsoonMovies = async (req, res) => {
     res.status(error.statusCode).json({ message: error.message });
   }
 };
-module.exports = { getMainMovies, getAllMovies, getComingsoonMovies };
+
+const searchText = async (req, res) => {
+  const { searchText } = req.query;
+  const result = await movieService.searchText(searchText);
+  res.status(200).json({ data: result });
+};
+const searchTitle = async (req, res) => {
+  const { searchText } = req.body;
+  const result = await movieService.searchText(searchText);
+  res.status(200).json({ data: result });
+};
+module.exports = {
+  getMainMovies,
+  getAllMovies,
+  getComingsoonMovies,
+  searchText,
+  searchTitle,
+};
