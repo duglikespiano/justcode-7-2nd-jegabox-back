@@ -28,7 +28,7 @@ const userInDB = async account_id => {
 //전화번호 DB등록 여부 확인
 const checkIfPhoneNumberExists = async phone_number => {
   const [userByPhoneNumber] = await database.query(`
-    SELECT * FROM USER WHERE phone_number = '${phone_number}'
+    SELECT * FROM user WHERE phone_number = '${phone_number}'
   `);
   return userByPhoneNumber;
 };

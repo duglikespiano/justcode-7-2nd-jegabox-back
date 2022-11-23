@@ -64,11 +64,14 @@ const signIn = async (req, res) => {
     });
 
     const userInDB = await userService.signIn(account_id, password);
+    let message = `USER '${account_id}' SIGNED IN`;
+    const id = userInDB.id;
     account_id = userInDB.account_id;
-    phone_number = userInDB.phone_number;
-    token = jwt.sign(
+    const phone_number = userInDB.phone_number;
+    const token = jwt.sign(
       {
         type: 'JWT',
+        id: id,
         account_id: account_id,
       },
       process.env.SECRET_KEY,
@@ -77,8 +80,6 @@ const signIn = async (req, res) => {
         issuer: 'Jegabox',
       }
     );
-    message = `USER '${account_id}' SIGNED IN`;
-    console.log(message);
 
     res.status(200).json({
       code: 200,
