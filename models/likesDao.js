@@ -1,9 +1,9 @@
 const database = require('./database');
 
-const addLikes = async (user_id, movie_id) => {
+const addLikes = async (id, movie_id) => {
   await database.query(`
     INSERT INTO jegabox.like (user_id, movie_id)
-    VALUES ("${user_id}", "${movie_id}")
+    VALUES (${id}, ${movie_id})
   `);
 };
 

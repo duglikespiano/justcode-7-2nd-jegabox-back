@@ -3,8 +3,9 @@ const likesService = require('../services/likesService');
 const addLikes = async (req, res) => {
   try {
     const { movie_id } = req.body;
-    const { token } = req.headers;
-
+    console.log(req.userInfo);
+    const id = req.userInfo.id;
+    console.log(id);
     const REQUIRED_KEYS = {
       movie_id,
     };
@@ -16,11 +17,11 @@ const addLikes = async (req, res) => {
       }
     });
 
-    await likesService.addLikes(movie_id, token);
+    await likesService.addLikes(movie_id, id);
     res.status(200).json({ message: 'success movie like' });
   } catch (err) {
     console.log(err);
-    res.status(err.statusCode).json({ message: err.message });
+    res.json({ message: err.message });
   }
 };
 
