@@ -51,7 +51,9 @@ CREATE TABLE `comment` (
     `user_id` int,
     `movie_id` int,
     `comment` varchar(1000) COMMENT '영화 평론',
-    `rating` int COMMENT '평점'
+    `rating` int COMMENT '평점',
+    `created_at` datetime default CURRENT_TIMESTAMP
+
 );
 
 CREATE TABLE `booking` (

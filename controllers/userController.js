@@ -83,7 +83,6 @@ const signIn = async (req, res) => {
       message: message,
       token: token,
     });
-    console.log(userInDB);
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: err.message });
