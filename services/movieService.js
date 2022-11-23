@@ -10,6 +10,12 @@ const getMainMovies = async token => {
         unit.likeCnt = 0;
       }
     });
+    mainMovies.forEach(item => {
+      if (item.cnt === 'null') {
+        item.cnt = 0;
+      }
+      item.cnt = item.cnt + item.like;
+    });
     return mainMovies;
   } else {
     const user = jwt.verify(token, process.env.SECRET_KEY);
@@ -20,6 +26,12 @@ const getMainMovies = async token => {
       if (unit.likeCnt === null) {
         unit.likeCnt = 0;
       }
+    });
+    mainMovies.forEach(item => {
+      if (item.cnt === 'null') {
+        item.cnt = 0;
+      }
+      item.cnt = item.cnt + item.like;
     });
     return mainMovies;
   }

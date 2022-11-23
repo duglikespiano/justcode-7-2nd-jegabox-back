@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const routes = require('./routes');
 // const multer = require('multer');
-// const morgan = require('morgan');
+const morgan = require('morgan');
 
 var corsOptions = {
   origin: '*',
@@ -14,6 +14,7 @@ const createApp = () => {
   app.use(cors(corsOptions));
 
   app.use(express.json());
+  app.use(morgan('combined'));
   app.use(routes);
   // app.use(multer);
   // app.use(morgan('combined'));
