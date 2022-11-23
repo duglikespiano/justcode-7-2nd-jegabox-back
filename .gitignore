@@ -240,8 +240,18 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+<<<<<<< HEAD
+./db
+.env
+package.json
+package-lock.json
+formemo.js
+
+# End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,visualstudiocode,node
+=======
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,visualstudiocode,node
 .env
 package.json
 package-lock.json
 db/schema.sql
+>>>>>>> origin/dev

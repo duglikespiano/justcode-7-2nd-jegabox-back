@@ -40,34 +40,46 @@ const IDInDB = async (name, birthday, phone_number) => {
   `);
 
   if (!userByPhoneNumber) {
-    throw new Error('NO PHONE NUMBER IN DB');
+    throw new Error('NO USER DATA IN DB(BY PHONE NUMBER)');
   }
-  if (
-    userByPhoneNumber.name !== name ||
-    userByPhoneNumber.birthday !== birthday
-  ) {
-    throw new Error('NO ID FOUND BY PHONE NUMBER AND BIRTHDAY IN DB');
+  if (userByPhoneNumber.name !== name) {
+    throw new Error('NO USER DATA IN DB(BY NAME)');
+  }
+  if (userByPhoneNumber.birthday !== birthday) {
+    throw new Error('NO USER DATA IN DB(BY BIRTHDAY)');
   }
   return userByPhoneNumber;
 };
 
-//비밀번호를 찾기위한 토큰 발행
-const issueTokenTofindPassword = async (account_id, name, phone_number) => {
-  const [findUserTofindPassword] = await database.query(`
+const userCheckforValidateNumber = async (account_id, name, phone_number) => {
+  const [userInfo] = await database.query(`
   SELECT * FROM user WHERE account_id = '${account_id}'AND name = '${name}' AND phone_number = '${phone_number}'
   `);
-  return findUserTofindPassword;
+  return userInfo;
 };
 
-//비밀번호호 재설정
-const resetPassword = async (account_id, password, passwordForCheck) => {
-  bcrypt.genSalt(10, (err, salt) => {
-    bcrypt.hash(password, salt, (err, hash) => {
-      database.query(`
-    UPDATE user SET password = '${hash}' WHERE account_id ='${account_id}'
+//비밀번호 재설정
+const resetPassword = async (account_id, hashed_password) => {
+  database.query(`
+    UPDATE user SET password = '${hashed_password}' WHERE account_id ='${account_id}'
     `);
-    });
-  });
+};
+
+//비밀번호 재설정
+const modifyMypage = async (account_id, email) => {
+  await database.query(`
+  UPDATE user SET email = '${email}' WHERE account_id = '${account_id}'
+  `);
+  const [userInDB] = await database.query(`
+    SELECT * FROM user WHERE account_id = '${account_id}'
+    `);
+  return userInDB;
+};
+
+//계정삭제API
+const deleteAccount = async account_id => {
+  await myDataSource.query(`SET foreign_key_checks = 0`);
+  await myDataSource.query(`DELETE FROM USERS WHERE id='${account_id}'`);
 };
 
 module.exports = {
@@ -75,6 +87,8 @@ module.exports = {
   userInDB,
   checkIfPhoneNumberExists,
   IDInDB,
-  issueTokenTofindPassword,
+  userCheckforValidateNumber,
   resetPassword,
+  modifyMypage,
+  deleteAccount,
 };

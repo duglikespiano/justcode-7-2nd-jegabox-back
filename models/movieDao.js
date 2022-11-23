@@ -82,6 +82,11 @@ const getAllMovies = async (likecnt, release) => {
 `
     )
     .then(answer => {
+<<<<<<< HEAD
+      return answer.map(item => {
+        return { ...item, cnt: Number(item.cnt) };
+      });
+=======
       return (
         [...answer].map(unit => {
           return { ...unit, type: JSON.parse(unit.type) };
@@ -94,6 +99,7 @@ const getAllMovies = async (likecnt, release) => {
           };
         })
       );
+>>>>>>> origin/dev
     });
 
   return getAllMovies;
