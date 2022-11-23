@@ -65,7 +65,7 @@ const signIn = async (req, res) => {
 
     const userInDB = await userService.signIn(account_id, password);
     account_id = userInDB.account_id;
-    phone_number = userInDB.phone_number;
+    const phone_number = userInDB.phone_number;
     token = jwt.sign(
       {
         type: 'JWT',
