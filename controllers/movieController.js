@@ -34,4 +34,24 @@ const getComingsoonMovies = async (req, res) => {
     res.status(error.statusCode).json({ message: error.message });
   }
 };
-module.exports = { getMainMovies, getAllMovies, getComingsoonMovies };
+
+async function getMovieByTitle(req, res) {
+  const searchText = req.query.searchText;
+  const result = await movieService.getMovieByTitle(searchText);
+
+  res.json(result);
+}
+
+async function getMovieBySearch(req, res) {
+  const searchTitle = req.body;
+  const result = await movieService.getMovieByTitle(searchTitle);
+  res.json(result);
+}
+
+module.exports = {
+  getMainMovies,
+  getAllMovies,
+  getComingsoonMovies,
+  getMovieByTitle,
+  getMovieBySearch,
+};

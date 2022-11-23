@@ -16,10 +16,11 @@ CREATE TABLE `movie` (
     `ko_title` varchar(50) COMMENT '영화 제목',
     `en_title` varchar(100),
     `description` varchar(1000) COMMENT '영화 설명',
-    `viewer` int COMMENT '누적 관람수',
+    `sub_description` varchar(1000),
     `movie_time` int COMMENT '영화 시간',
     `director` varchar(20) COMMENT '감독',
     `grade` varchar(20) COMMENT '영화 관람 등급',
+    `grade_simple` varchar(20) COMMENT '영화 관람 등급', 
     `actors` varchar(300) COMMENT '배우들',
     `genre` varchar(300) COMMENT '장르',
     `release_date` datetime,
@@ -57,7 +58,8 @@ CREATE TABLE `booking` (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `user_id` int,
     `showtime_id` int,
-    `seat_count` int COMMENT '관람 인원',
+    `seat_count_adult` int default 0 COMMENT '관람 어른 인원수',
+    `seat_count_child` int default 0 COMMENT '관람 아이 인원수',
     `seat_name` varchar(20) COMMENT '관람객석',
     `ko_title` varchar(50),
     `movie_poster` varchar(200),
@@ -148,11 +150,10 @@ DROP TABLE `movie_type_properties`;
 DROP TABLE `like`;
 DROP TABLE `comment`;
 DROP TABLE `booking`;
-DROP TABLE `booking_seat`;
-DROP TABLE `booking_canceled_record`;
-DROP TABLE `region`;
-DROP TABLE `location`;
+DROP TABLE `canceled_booking`;
 DROP TABLE `cinema`;
+DROP TABLE `location`;
+DROP TABLE `movie_cinema`;
 DROP TABLE `showtime`;
 DROP TABLE `showtime_seat`;
 SET foreign_key_checks = 1;

@@ -52,4 +52,15 @@ const getComingsoonMovies = async sort => {
 
   return comingsoonMovie;
 };
-module.exports = { getMainMovies, getAllMovies, getComingsoonMovies };
+
+async function getMovieByTitle(searchText) {
+  const result = await movieDao.getMovieByTitle(searchText);
+  return result;
+}
+
+module.exports = {
+  getMainMovies,
+  getAllMovies,
+  getComingsoonMovies,
+  getMovieByTitle,
+};
