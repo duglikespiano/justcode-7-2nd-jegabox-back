@@ -5,7 +5,7 @@ const { createApp } = require('./app');
 
 const startServer = async () => {
   const app = createApp();
-  const PORT = process.env.PORT;
+  const PORT = process.env.PORT || 8000;
 
   app.listen(PORT, () => {
     console.log(`server is listening on PORT ${PORT}`);

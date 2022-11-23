@@ -44,6 +44,8 @@ async function booking(req, res) {
   if (seat_count_child === undefined) {
     seat_count_child = 0;
   }
+  price = 0;
+  console.log(price);
   await bookingService.booking(
     user_id,
     showtime_id,
