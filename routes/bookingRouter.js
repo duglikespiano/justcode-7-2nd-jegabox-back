@@ -1,6 +1,8 @@
 const express = require('express');
+const mw = require('../middleware/middleware');
+const { asyncWrap } = require('../utils/myutils.js');
+
 const {
-  getallcinema,
   findMovieTimeByCinema,
   findMovieTimeByLocation,
   getallmovie,
@@ -12,13 +14,12 @@ const {
 
 const router = express.Router();
 
-router.get('/test', getallcinema);
-router.get('/', getallmovie);
-router.post('/movie-cinema', findMovieTimeByCinema);
-router.post('/movie-location', findMovieTimeByLocation);
-router.post('/cinema', findCinemaByLocation);
-router.post('/booking', booking);
-router.post('/timetable', getTimeTable);
-router.post('/cancel', cancelBook);
+router.get('/', asyncWrap(getallmovie));
+router.post('/movie-cinema', asyncWrap(findMovieTimeByCinema));
+router.post('/movie-location', asyncWrap(findMovieTimeByLocation));
+router.post('/cinema', asyncWrap(findCinemaByLocation));
+router.post('/booking', asyncWrap(mw.authMiddleware), asyncWrap(booking));
+router.post('/timetable', asyncWrap(getTimeTable));
+router.post('/cancel', asyncWrap(mw.authMiddleware), asyncWrap(cancelBook));
 
 module.exports = router;

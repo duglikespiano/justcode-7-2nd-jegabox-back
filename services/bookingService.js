@@ -1,10 +1,5 @@
 const bookingDao = require('../models/bookingDAO');
 
-async function getAllCinema() {
-  const result = await bookingDao.getallcinema();
-  return result;
-}
-
 async function getallmovie() {
   const result = await bookingDao.getallmovie();
   result.forEach(unit => {
@@ -27,6 +22,19 @@ async function findCinemaByLocation(loc_id) {
 }
 
 async function findMovieTimeByCinema(date, movie_id, cinema_id) {
+  if (movie_id.length === 1) {
+    movie_id = `movie_id = ${movie_id[0]}`;
+  } else if (movie_id.length === 2) {
+    movie_id = `(movie_id = ${movie_id[0]} OR movie_id = ${movie_id[1]})`;
+  } else if (movie_id.length === 0) {
+    movie_id = `(movie_id > 0)`;
+  }
+
+  if (cinema_id.length === 1) {
+    cinema_id = `cinema_id = ${cinema_id[0]}`;
+  } else if (cinema_id.length === 2) {
+    cinema_id = `(cinema_id = ${cinema_id[0]} OR cinema_id = ${cinema_id[1]})`;
+  }
   const result = await bookingDao.findMovieTimeByCinema(
     date,
     movie_id,
@@ -44,7 +52,15 @@ async function findMovieTimeByLocation(date, movie_title, loc_name) {
   return result;
 }
 
-async function booking(showtime_id, seat_count, seat_name) {
+async function booking(
+  user_id,
+  showtime_id,
+  seat_count_adult,
+  seat_count_child,
+  seat_name,
+  price
+) {
+  const seat_count = seat_count_adult + seat_count_child;
   await bookingDao.deleteSeat(showtime_id, seat_count, seat_name);
 
   const movieInfo = await bookingDao.getMovieInfo(showtime_id);
@@ -61,11 +77,15 @@ async function booking(showtime_id, seat_count, seat_name) {
       String(await createRandNum(100, 999)) +
       '-' +
       String(await createRandNum(10000, 99999));
+
     const ExistTicketNum = await bookingDao.ExistTicketNum(TicketNum);
+
     if (!ExistTicketNum) {
       await bookingDao.insertBookingInfo(
+        user_id,
         showtime_id,
-        seat_count,
+        seat_count_adult,
+        seat_count_child,
         seat_name,
         movieInfo.ko_title,
         movieInfo.movie_poster,
@@ -74,7 +94,8 @@ async function booking(showtime_id, seat_count, seat_name) {
         movieInfo.screen,
         movieInfo.showtime_day,
         movieInfo.start_time,
-        TicketNum
+        TicketNum,
+        price
       );
       break;
     }
@@ -89,6 +110,7 @@ async function getTimeTable(day, movie_id, loc_id) {
 async function cancelBook(user_id, TicketNum) {
   const BookRecord = await bookingDao.getBookRecord(TicketNum);
   BookRecord.showtime_day = BookRecord.showtime_day.toISOString().split('T')[0];
+
   await bookingDao.createCancelRecord(
     user_id,
     BookRecord.ko_title,
@@ -97,13 +119,13 @@ async function cancelBook(user_id, TicketNum) {
     BookRecord.start_time,
     BookRecord.price
   );
+
   const seat = await bookingDao.getSeatByTicketNum(TicketNum);
   await bookingDao.addSeat(BookRecord.showtime_id, seat);
   await bookingDao.deleteBookRecord(TicketNum);
 }
 
 module.exports = {
-  getAllCinema,
   findMovieTimeByCinema,
   findMovieTimeByLocation,
   getallmovie,
