@@ -60,11 +60,11 @@ const signUp = async (
   //--------------id검증로직시작----------------//
   //id에 영어문자가 없을 시 오류 발생
   if (account_id.search(engReg) === -1) {
-    throw new Error('ID MUST INCLUDES ENGLISH CHARACTERS');
+    throw new Error('ID MUST INCLUDE ENGLISH CHARACTERS');
   }
   //id에 숫자가 없을 시 오류 발생
   if (account_id.search(numReg) === -1) {
-    throw new Error('ID MUST INCLUDES NUMBERS');
+    throw new Error('ID MUST INCLUDE NUMBERS');
   }
   //id가 6~12자리가 아닐 시 오류 발생
   if (account_id.length < 4 || account_id.length > 16) {
