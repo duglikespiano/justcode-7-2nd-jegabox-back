@@ -4,7 +4,7 @@ const routes = require('./routes');
 // const multer = require('multer');
 const morgan = require('morgan');
 
-var corsOptions = {
+const corsOptions = {
   origin: '*',
   optionsSuccessStatus: 200,
 };

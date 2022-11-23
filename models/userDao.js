@@ -10,7 +10,7 @@ const signUp = async (
   name
 ) => {
   await database.query(`
-    INSERT INTO USER (birthday, phone_number, account_id, password, email, name)
+    INSERT INTO user (birthday, phone_number, account_id, password, email, name)
     VALUES (
     '${birthday}', '${phone_number}', '${account_id}', '${hashed_password}', '${email}', '${name}'
     )
@@ -20,7 +20,7 @@ const signUp = async (
 //ID로 사용자 찾기
 const userInDB = async account_id => {
   const [userInDB] = await database.query(`
-    SELECT * FROM USER WHERE account_id = '${account_id}'
+    SELECT * FROM user WHERE account_id = '${account_id}'
     `);
   return userInDB;
 };
@@ -28,7 +28,7 @@ const userInDB = async account_id => {
 //전화번호 DB등록 여부 확인
 const checkIfPhoneNumberExists = async phone_number => {
   const [userByPhoneNumber] = await database.query(`
-    SELECT * FROM USER WHERE phone_number = '${phone_number}'
+    SELECT * FROM user WHERE phone_number = '${phone_number}'
   `);
   return userByPhoneNumber;
 };
@@ -36,7 +36,7 @@ const checkIfPhoneNumberExists = async phone_number => {
 //생일, 전화번호로 유저 찾기
 const IDInDB = async (name, birthday, phone_number) => {
   const [userByPhoneNumber] = await database.query(`
-    SELECT * FROM USER WHERE phone_number = '${phone_number}'
+    SELECT * FROM user WHERE phone_number = '${phone_number}'
   `);
 
   if (!userByPhoneNumber) {
@@ -54,7 +54,7 @@ const IDInDB = async (name, birthday, phone_number) => {
 //비밀번호를 찾기위한 토큰 발행
 const issueTokenTofindPassword = async (account_id, name, phone_number) => {
   const [findUserTofindPassword] = await database.query(`
-  SELECT * FROM USER WHERE account_id = '${account_id}'AND name = '${name}' AND phone_number = '${phone_number}'
+  SELECT * FROM user WHERE account_id = '${account_id}'AND name = '${name}' AND phone_number = '${phone_number}'
   `);
   return findUserTofindPassword;
 };
@@ -64,7 +64,7 @@ const resetPassword = async (account_id, password, passwordForCheck) => {
   bcrypt.genSalt(10, (err, salt) => {
     bcrypt.hash(password, salt, (err, hash) => {
       database.query(`
-    UPDATE USER SET password = '${hash}' WHERE account_id ='${account_id}'
+    UPDATE user SET password = '${hash}' WHERE account_id ='${account_id}'
     `);
     });
   });
