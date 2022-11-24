@@ -18,7 +18,7 @@ const getMainMovies = async token => {
   }
   mainMovies.forEach(unit => {
     if (user_id !== undefined) {
-      if (existLike.movie_id.includes(unit.id)) {
+      if (existLike && existLike.movie_id.includes(unit.id)) {
         unit.isLiked = true;
       } else {
         unit.isLiked = false;
@@ -56,7 +56,7 @@ const getAllMovies = async (token, released) => {
   }
   Allmovies.forEach(unit => {
     if (user_id !== undefined) {
-      if (existLike.movie_id.includes(unit.id)) {
+      if (existLike && existLike.movie_id.includes(unit.id)) {
         unit.isLiked = true;
       } else {
         unit.isLiked = false;
@@ -97,7 +97,7 @@ const getComingsoonMovies = async (token, sort) => {
   }
   comingsoonMovie.forEach(unit => {
     if (user_id !== undefined) {
-      if (existLike.movie_id.includes(unit.id)) {
+      if (existLike && existLike.movie_id.includes(unit.id)) {
         unit.isLiked = true;
       } else {
         unit.isLiked = false;
@@ -129,7 +129,7 @@ const searchText = async (token, searchText) => {
   }
   result.forEach(unit => {
     if (user_id !== undefined) {
-      if (existLike.movie_id.includes(unit.id)) {
+      if (existLike && existLike.movie_id.includes(unit.id)) {
         unit.isLiked = true;
       } else {
         unit.isLiked = false;
@@ -161,7 +161,7 @@ const searchTitle = async (token, searchTitle) => {
   }
   result.forEach(unit => {
     if (user_id !== undefined) {
-      if (existLike.movie_id.includes(unit.id)) {
+      if (existLike && existLike.movie_id.includes(unit.id)) {
         unit.isLiked = true;
       } else {
         unit.isLiked = false;
@@ -180,7 +180,7 @@ const searchTitle = async (token, searchTitle) => {
 async function getMovieDetail(token, id) {
   let likecnt;
   let user_id;
-  if (!token) {
+  if (token === 'null') {
     likecnt = `LEFT JOIN (SELECT movie_id, count(*) AS likeCnt FROM jegabox.like WHERE user_id = 0 GROUP BY movie_id) AS lct ON movie.id = lct.movie_id`;
   } else {
     const user = jwt.verify(token, process.env.SECRET_KEY);
