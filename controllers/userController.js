@@ -51,6 +51,7 @@ const signIn = async (req, res) => {
   let { account_id, password } = req.body;
   const REQUIRE_KEYS = { account_id, password };
 
+
   Object.keys(REQUIRE_KEYS).map(key => {
     if (!REQUIRE_KEYS[key]) {
       throw new Error(`KEY_ERROR: ${key}`);
@@ -211,6 +212,7 @@ const checkValidateNumber = async (req, res) => {
     // 인증번호객체가 없을 경우 에러 발생(인증시간만료)
     throw new Error('인증 시간이 만료되었습니다.');
   }
+  console.log(validateNumber);
   if (myCache.get('randomNumberObj').randomNumber !== validateNumber) {
     // 사용자가 입력한 인증번호와 캐쉬 내 인증번호가 다를 경우 에러 발생
     throw new Error('인증번호가 틀립니다.');
