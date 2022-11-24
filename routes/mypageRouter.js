@@ -22,4 +22,10 @@ router.get(
   asyncWrap(mypageController.getHeaderInfo)
 );
 
+router.get(
+  '/moviestory',
+  asyncWrap(mw.authMiddleware),
+  asyncWrap(mypageController.getLikeMovie)
+);
+
 module.exports = router;

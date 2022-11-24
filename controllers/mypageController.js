@@ -18,4 +18,10 @@ async function getHeaderInfo(req, res) {
   res.json(result);
 }
 
-module.exports = { getBookList, getCancelList, getHeaderInfo };
+async function getLikeMovie(req, res) {
+  const user_id = req.userInfo.id;
+  const result = await mypageService.getLikeMovie(user_id);
+  res.json(result);
+}
+
+module.exports = { getBookList, getCancelList, getHeaderInfo, getLikeMovie };

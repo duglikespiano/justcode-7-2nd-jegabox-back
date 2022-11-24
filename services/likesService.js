@@ -1,18 +1,19 @@
 const likesDao = require('../models/likesDao');
-const jwt = require('jsonwebtoken');
-const jwtSecret = process.env.SECRET_KEY;
 
 const addLikes = async (movie_id, id) => {
-  // const user = jwt.verify(token, jwtSecret);
-  // const user_id = user.id;
-  console.log(id);
   await likesDao.addLikes(id, movie_id);
 };
 
-const removelikes = async (movie_id, token) => {
-  const user = jwt.verify(token, jwtSecret);
-  const user_id = user.id;
-
-  await likesDao.removelikes(user_id, movie_id);
+const removelikes = async (id, movie_id) => {
+  await likesDao.removeLikes(id, movie_id);
 };
-module.exports = { addLikes, removelikes };
+
+async function likes(id, movie_id) {
+  const existLikes = await likesDao.existLikes(id, movie_id);
+  if (existLikes.length === 0) {
+    await likesDao.addLikes(id, movie_id);
+  } else {
+    await likesDao.removeLikes(id, movie_id);
+  }
+}
+module.exports = { addLikes, removelikes, likes };

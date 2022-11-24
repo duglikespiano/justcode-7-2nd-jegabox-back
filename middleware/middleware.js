@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 async function authMiddleware(req, _, next) {
   const token = req.headers.authorization;
   const decodedToken = decodeToken(token);
-  req.userInfo = { id: decodedToken.account_id };
+  req.userInfo = { id: decodedToken.id };
   next();
 }
 

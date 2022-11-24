@@ -25,9 +25,14 @@ async function getHeaderInfo(user_id) {
     return result;
   } else {
     const rtn = await mypageDao.getHearderInfoWithoutBook(user_id);
-    console.log(rtn);
+    rtn.ko_title = '예매내역이 없어요!';
     return rtn;
   }
 }
 
-module.exports = { getBookList, getCancelList, getHeaderInfo };
+async function getLikeMovie(user_id) {
+  const result = await mypageDao.getLikeMovie(user_id);
+  return result;
+}
+
+module.exports = { getBookList, getCancelList, getHeaderInfo, getLikeMovie };
