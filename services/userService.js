@@ -166,25 +166,8 @@ const signIn = async (account_id, password) => {
     const error = new Error('패스워드가 틀렸습니다.');
     error.statusCode = 400;
     throw error;
-  } else {
-    const id = userInDB.id;
-    const phone_number = userInDB.phone_number;
-    const token = jwt.sign(
-      {
-        type: 'JWT',
-        id: id,
-        account_id: account_id,
-        phone_number: phone_number,
-      },
-      process.env.SECRET_KEY,
-      {
-        expiresIn: '30000000000000000000m', // 만료시간 30분
-        issuer: 'Jegabox',
-      }
-    );
-    console.log(token);
-    return token;
   }
+  return userInDB;
 };
 
 //계정중복확인
