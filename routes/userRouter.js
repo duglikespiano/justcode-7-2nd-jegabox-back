@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const { authMiddleware } = require('../middleware/middleware.js');
 
 //회원가입API
 router.post('/signup', userController.signUp);
@@ -18,14 +17,20 @@ router.post('/ID', userController.findID);
 //계정삭제API
 router.delete('/ID', userController.deleteAccount);
 
-//비밀번호 재설정 할 때 인증번호 요청API
+//비밀번호 찾기 할 때 인증번호 요청API
 router.post('/validateNumber1', userController.requestValidateNumber);
 
-//본인인증을 위한 인증번호 발송API(회원정보 수정 시)
+//본인인증을 위한 인증번호 발송API(마이페이지 화면 진입 시)
 router.post('/validateNumber2', userController.sendValidateNumber);
 
-//인증번호 확인API
+//본인인증을 위한 인증번호 발송API(회원정보 수정 시)
+router.post('/validateNumber3', userController.sendValidateNumber2);
+
+//인증번호 확인API(비밀번호 찾기)
 router.patch('/validateNumber', userController.checkValidateNumber);
+
+//인증번호 확인API(마이페이지 전화번호 수정)
+router.patch('/validateNumber2', userController.checkValidateNumber2);
 
 //비밀번호재설정API(로그인 화면에서 비밀번호 찾기 할 때)
 router.patch('/password1', userController.resetPassword1);

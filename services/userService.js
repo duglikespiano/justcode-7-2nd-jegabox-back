@@ -129,7 +129,6 @@ const signUp = async (
     phone_number
   );
   if (userByPhoneNumber) {
-    console.log('userByPhoneNumber', userByPhoneNumber);
     const error = new Error(
       `PHONE NUMBER '${phone_number}' IS ALREADY BEING USED`
     );
@@ -235,7 +234,7 @@ const userCheckforValidateNumber = async (account_id, name, phone_number) => {
   return userInfo;
 };
 
-//비밀번호 재설정
+//비밀번호 재설정(로그인 화면에서 비밀번호 찾기 할 때)
 const resetPassword1 = async (account_id, password, passwordForCheck) => {
   //--------------비밀번호검증로직시작----------------//
   //비밀번호가 일치하지 않을 경우 오류 발생
@@ -279,36 +278,50 @@ const resetPassword1 = async (account_id, password, passwordForCheck) => {
   await userDao.resetPassword(account_id, hashed_password);
 };
 
-//비밀번호 재설정
-const resetPassword2 = async (account_id, password, passwordForCheck) => {
+//비밀번호재설정API(마이페이지에서 비밀번호 변경 할 때)
+const resetPassword2 = async (
+  account_id,
+  password,
+  password_new,
+  passwordForCheck_new
+) => {
+  const userInDB = await userDao.userInDB(account_id);
+  if (!userInDB) {
+    const error = new Error('NO USER DATA IN DB');
+    error.statusCode = 404;
+    throw error;
+  }
   const pwSame = bcrypt.compareSync(password, userInDB.password);
   if (!pwSame) {
     const error = new Error('INCORRECT PASSWORD');
     error.statusCode = 400;
     throw error;
   }
+  console.log(password);
+  console.log(password_new);
+  console.log(passwordForCheck_new);
   //--------------비밀번호검증로직시작----------------//
   //비밀번호가 일치하지 않을 경우 오류 발생
-  if (password !== passwordForCheck) {
+  if (password_new != passwordForCheck_new) {
     throw new Error('PASSWORDS DO NOT MATCH');
   }
   //비밀번호가 6~20자리가 아닐 시 오류 발생
-  if (password.length < 6 || password.length > 20) {
+  if (password_new.length < 6 || password_new.length > 20) {
     throw new Error('PASSWORD MUST BE 6~20 DIGITS');
   }
   //비밀번호에 스페이스가 있을 시 오류 발생
-  if (password.search(/\s/) > -1) {
+  if (password_new.search(/\s/) > -1) {
     throw new Error('SPACE IS NOT ALLOWED FOR PASSWORD');
   }
   //비밀번호를 구성하는 변수 종류를 variablesCount으로 측정
   let variablesCount = 0;
-  if (password.search(engReg) !== -1) {
+  if (password_new.search(engReg) !== -1) {
     variablesCount += 1;
   }
-  if (password.search(numReg) !== -1) {
+  if (password_new.search(numReg) !== -1) {
     variablesCount += 1;
   }
-  if (password.search(speReg) !== -1) {
+  if (password_new.search(speReg) !== -1) {
     variablesCount += 1;
   }
   //비밀번호를 구성하는 변수의 종류가 2종 이하일 경우 오류 발생
@@ -318,16 +331,16 @@ const resetPassword2 = async (account_id, password, passwordForCheck) => {
     );
   }
   //비밀번호에 영어, 특수문자, 숫자 이외의 문제가 입력될 시 오류 발생
-  if (password.search(noEngNumSpeReg) !== -1) {
+  if (password_new.search(noEngNumSpeReg) !== -1) {
     throw new Error(
       'PASSWORD ONLY INCLUDES ENGLISH & SPECIAL CHARACTERS, NUMBERS'
     );
   }
   //--------------비밀번호검증로직끝----------------//
+
   const salt = bcrypt.genSaltSync();
-  const hashed_password = bcrypt.hashSync(password, salt);
+  const hashed_password = bcrypt.hashSync(password_new, salt);
   await userDao.resetPassword(account_id, hashed_password);
-  return userInDB;
 };
 
 const requestMypage = async account_id => {
@@ -336,6 +349,10 @@ const requestMypage = async account_id => {
 };
 
 const modifyMypage = async (account_id, email) => {
+  //--------------이메일검증----------------//
+  if (email.search(emailReg) === -1) {
+    throw new Error('EMAIL IS INVALID');
+  }
   const userInDB = await userDao.modifyMypage(account_id, email);
   return userInDB;
 };
@@ -356,15 +373,41 @@ const deleteAccount = async (account_id, password) => {
   await userDao.deleteAccount(account_id);
 };
 
+//마이페이지에서 전화번호 변경 API
+const checkIfPhoneNumberExists = async (account_id, phone_number) => {
+  const userByPhoneNumber = await userDao.checkIfPhoneNumberExists2(account_id);
+  if (userByPhoneNumber.phone_number == phone_number) {
+    const error = new Error(`NEW PHONE NUMBER REQUIRED`);
+    error.statusCode = 404;
+    throw error;
+  }
+  const checkIfPhoneNumberIsOccupied = await userDao.checkIfPhoneNumberExists(
+    phone_number
+  );
+  if (checkIfPhoneNumberIsOccupied) {
+    const error = new Error(
+      `PHONE NUMBER '${phone_number}' IS ALREADY BEING USED`
+    );
+    error.statusCode = 404;
+    throw error;
+  }
+};
+
+const modifyPhoneNumber = async (account_id, phone_number) => {
+  await userDao.modifyPhoneNumber(account_id, phone_number);
+};
+
 module.exports = {
   signUp,
   signIn,
   checkIfIDExists,
   findID,
   userCheckforValidateNumber,
+  checkIfPhoneNumberExists,
   resetPassword1,
   resetPassword2,
   requestMypage,
   modifyMypage,
+  modifyPhoneNumber,
   deleteAccount,
 };
