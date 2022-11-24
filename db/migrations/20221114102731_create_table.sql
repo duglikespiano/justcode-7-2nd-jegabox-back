@@ -17,10 +17,11 @@ CREATE TABLE `movie` (
     `en_title` varchar(100),
     `description` varchar(1000) COMMENT '영화 설명',
     `sub_description` varchar(1000),
+    `viewer` int default 0,
     `movie_time` int COMMENT '영화 시간',
     `director` varchar(20) COMMENT '감독',
     `grade` varchar(20) COMMENT '영화 관람 등급',
-    `grade_simple` varchar(20) COMMENT '영화 관람 등급', 
+    `grade_simple` varchar(20) default null COMMENT '영화 관람 등급', 
     `actors` varchar(300) COMMENT '배우들',
     `genre` varchar(300) COMMENT '장르',
     `release_date` datetime,
@@ -39,7 +40,7 @@ CREATE TABLE `movie_type_properties` (
     `movie_type` varchar(20) COMMENT 'ex) 2D, 3D'
 );
 
-CREATE TABLE `like` (
+CREATE TABLE `likes` (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `user_id` int COMMENT '유저 아이디',
     `movie_id` int COMMENT '영화 이름',

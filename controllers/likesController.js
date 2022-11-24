@@ -1,54 +1,50 @@
 const likesService = require('../services/likesService');
 
 const addLikes = async (req, res) => {
-  try {
-    const { movie_id } = req.body;
-    console.log(req.userInfo);
-    const id = req.userInfo.id;
-    console.log(id);
-    const REQUIRED_KEYS = {
-      movie_id,
-    };
-    Object.keys(REQUIRED_KEYS).map(key => {
-      if (!REQUIRED_KEYS[key]) {
-        const error = new Error(`KEY_ERROR: ${key}`);
-        error.statusCode = 400;
-        throw error;
-      }
-    });
+  const { movie_id } = req.body;
+  const id = req.userInfo.id;
 
-    await likesService.addLikes(movie_id, id);
-    res.status(200).json({ message: 'success movie like' });
-  } catch (err) {
-    console.log(err);
-    res.json({ message: err.message });
-  }
+  const REQUIRED_KEYS = {
+    movie_id,
+  };
+  Object.keys(REQUIRED_KEYS).map(key => {
+    if (!REQUIRED_KEYS[key]) {
+      const error = new Error(`KEY_ERROR: ${key}`);
+      error.statusCode = 400;
+      throw error;
+    }
+  });
+
+  await likesService.addLikes(movie_id, id);
+  res.status(200).json({ message: 'success movie like' });
 };
 
 const removelikes = async (req, res) => {
-  try {
-    const { movie_id } = req.body;
-    const { token } = req.headers;
+  const { movie_id } = req.body;
+  const id = req.userInfo.id;
 
-    const REQUIRED_KEYS = {
-      movie_id,
-    };
+  const REQUIRED_KEYS = {
+    movie_id,
+  };
 
-    Object.keys(REQUIRED_KEYS).map(key => {
-      if (!REQUIRED_KEYS[key]) {
-        const error = new Error(`KEY_ERROR: ${key}`);
-        error.statusCode = 400;
-        throw error;
-      }
-    });
+  Object.keys(REQUIRED_KEYS).map(key => {
+    if (!REQUIRED_KEYS[key]) {
+      const error = new Error(`KEY_ERROR: ${key}`);
+      error.statusCode = 400;
+      throw error;
+    }
+  });
 
-    await likesService.removelikes(movie_id, token);
+  await likesService.removelikes(id, movie_id);
 
-    res.status(200).json({ message: 'success delete' });
-  } catch (err) {
-    console.log(err);
-    res.status(err.statusCode).json({ message: err.message });
-  }
+  res.status(200).json({ message: 'success delete' });
 };
 
-module.exports = { addLikes, removelikes };
+async function likes(req, res) {
+  const id = req.userInfo.id;
+  const { movie_id } = req.body;
+  await likesService.likes(id, movie_id);
+  res.json({ message: '얍' });
+}
+
+module.exports = { addLikes, removelikes, likes };

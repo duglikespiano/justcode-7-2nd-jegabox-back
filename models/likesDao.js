@@ -2,18 +2,32 @@ const database = require('./database');
 
 const addLikes = async (id, movie_id) => {
   await database.query(`
-    INSERT INTO jegabox.like (user_id, movie_id)
-    VALUES (${id}, ${movie_id})
+    INSERT INTO
+      jegabox.like (user_id, movie_id)
+    VALUES
+      (${id}, ${movie_id})
   `);
 };
 
-const removelikes = async (user_id, movie_id) => {
+const removeLikes = async (user_id, movie_id) => {
   await database.query(`
-  DELETE FROM jegabox.like
-  WHERE user_id = ${user_id} && movie_id = ${movie_id}
+  DELETE FROM
+    jegabox.like
+  WHERE
+    user_id = ${user_id} AND movie_id = ${movie_id}
   `);
 };
 
-module.exports = { addLikes, removelikes };
+async function existLikes(id, movie_id) {
+  const rtn = await database.query(`
+    SELECT
+      *
+    FROM
+      jegabox.like
+    WHERE
+      user_id = ${id} AND movie_id = ${movie_id}
+  `);
+  return rtn;
+}
 
-// 마이페이지 구현하면 get likes 만들 예정
+module.exports = { addLikes, removeLikes, existLikes };

@@ -73,7 +73,7 @@ async function getHeaderInfoWithBook(user_id) {
 }
 
 async function getHearderInfoWithoutBook(user_id) {
-  const rtn = await database.query(`
+  const [rtn] = await database.query(`
     SELECT
       user.name
     FROM
@@ -84,10 +84,29 @@ async function getHearderInfoWithoutBook(user_id) {
   return rtn;
 }
 
+async function getLikeMovie(user_id) {
+  const rtn = await database.query(`
+    SELECT
+	    movie.ko_title,
+      movie.movie_poster,
+      movie.director,
+      movie.genre,
+      movie.movie_time,
+      jegabox.like.created_at
+    FROM
+	    jegabox.like
+    JOIN movie ON jegabox.like.movie_id = movie.id
+    WHERE
+      jegabox.like.user_id = ${user_id}
+  `);
+  return rtn;
+}
+
 module.exports = {
   getBookList,
   getCancelList,
   getHeaderInfoWithBook,
   ExistBookingRecord,
   getHearderInfoWithoutBook,
+  getLikeMovie,
 };

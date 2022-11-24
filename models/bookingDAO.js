@@ -83,15 +83,15 @@ async function findMovieTimeByLocation ( date, movie_title, loc_name ) {
     JOIN location ON cinema.location_id = location.id
     JOIN showtime ON showtime.movie_cinema_id = movie_cinema.id
     JOIN 
-        (SELECT
-          showtime_seat.showtime_id as time_id,
-          showtime.showtime_day as DAY,
-          JSON_ARRAYAGG(showtime_seat.seat_name) as SEAT
-        FROM showtime_seat
-        JOIN showtime ON showtime.id = showtime_seat.showtime_id
-        GROUP BY showtime_seat.showtime_id, showtime.showtime_day) as seat_sub ON showtime.id = seat_sub.time_id
+      (SELECT
+        showtime_seat.showtime_id as time_id,
+        showtime.showtime_day as DAY,
+        JSON_ARRAYAGG(showtime_seat.seat_name) as SEAT
+      FROM showtime_seat
+      JOIN showtime ON showtime.id = showtime_seat.showtime_id
+      GROUP BY showtime_seat.showtime_id, showtime.showtime_day) as seat_sub ON showtime.id = seat_sub.time_id
       WHERE DAY = '${date}' AND movie.ko_title = '${movie_title}' AND location.location_name = '${loc_name}'
-      GROUP BY movie_cinema.id, showtime.id
+    GROUP BY movie_cinema.id, showtime.id
   `)
   .then((answer) => {
     return [...answer].map((item) => {
