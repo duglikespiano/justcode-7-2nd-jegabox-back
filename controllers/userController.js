@@ -57,26 +57,12 @@ const signIn = async (req, res) => {
     }
   });
 
-  const userInDB = await userService.signIn(account_id, password);
+  const token = await userService.signIn(account_id, password);
   let message = `USER '${account_id}' SIGNED IN`;
-  const id = userInDB.id;
-  account_id = userInDB.account_id;
-  const token = jwt.sign(
-    {
-      type: 'JWT',
-      id: id,
-      account_id: account_id,
-    },
-    process.env.SECRET_KEY,
-    {
-      expiresIn: '30000000000000000000m', // 만료시간 30분
-      issuer: 'Jegabox',
-    }
-  );
-
   res.status(200).json({
     code: 200,
     account_id: account_id,
+    phone_number: token.phone_number,
     message: message,
     token: token,
   });
@@ -255,26 +241,31 @@ const checkValidateNumber = async (req, res) => {
 
 //마이페이지에서 전화번호 변경 API(인증번호 확인 후 전화번호까지 변경)
 const checkValidateNumber2 = async (req, res) => {
-  const { account_id, validateNumber, phone_number } = req.body;
-  // 사용자가 입력한 인증번호를 추출
-  if (!myCache.get('randomNumberObj')) {
-    // 인증번호객체가 없을 경우 에러 발생(인증시간만료)
-    throw new Error('VALIDATE NUMBER EXPIRED');
+  try {
+    const { account_id, validateNumber, phone_number } = req.body;
+    // 사용자가 입력한 인증번호를 추출
+    if (!myCache.get('randomNumberObj')) {
+      // 인증번호객체가 없을 경우 에러 발생(인증시간만료)
+      throw new Error('VALIDATE NUMBER EXPIRED');
+    }
+    if (myCache.get('randomNumberObj').randomNumber != validateNumber) {
+      // 사용자가 입력한 인증번호와 캐쉬 내 인증번호가 다를 경우 에러 발생
+      throw new Error('INVALID VALIDATE NUMBER');
+    }
+    // 사용자가 입력한 인증번호와 캐쉬 내 인증번호가 일치할 경우 비밀번호 변경
+    console.log(myCache.get('randomNumberObj').randomNumber);
+    console.log(validateNumber);
+    await userService.modifyPhoneNumber(account_id, phone_number);
+    message = `'${account_id}''S PHONE NUMBER HAS BEEN MODIFIED`;
+    console.log(message);
+    res.status(200).json({
+      code: 200,
+      message: message,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: err.message });
   }
-  if (myCache.get('randomNumberObj').randomNumber != validateNumber) {
-    // 사용자가 입력한 인증번호와 캐쉬 내 인증번호가 다를 경우 에러 발생
-    throw new Error('INVALID VALIDATE NUMBER');
-  }
-  // 사용자가 입력한 인증번호와 캐쉬 내 인증번호가 일치할 경우 비밀번호 변경
-  console.log(myCache.get('randomNumberObj').randomNumber);
-  console.log(validateNumber);
-  await userService.modifyPhoneNumber(account_id, phone_number);
-  message = `'${account_id}''S PHONE NUMBER HAS BEEN MODIFIED`;
-  console.log(message);
-  res.status(200).json({
-    code: 200,
-    message: message,
-  });
 };
 
 //비밀번호재설정API(로그인 화면에서 비밀번호 찾기 할 때)
@@ -333,23 +324,6 @@ const resetPassword2 = async (req, res) => {
     userID: account_id,
   });
 };
-//   //req.body로부터 비밀번호와 체크용비밀번호 확인
-//   const { password, passwordForCheck } = req.body;
-//   const REQUIRE_KEYS = { password, passwordForCheck };
-//   Object.keys(REQUIRE_KEYS).map(key => {
-//     if (!REQUIRE_KEYS[key]) {
-//       throw new Error(`KEY_ERROR: ${key}`);
-//     }
-//   });
-//   await userService.resetPassword2(account_id, password, passwordForCheck);
-//   message = `USER '${account_id}''s PASSWORD HAS BEEN RESET`;
-//   console.log(message);
-//   res.status(200).json({
-//     code: 200,
-//     message: message,
-//     userID: account_id,
-//   });
-// };
 
 const sendValidateNumber = async (req, res) => {
   myCache.del('randomNumberObj');
@@ -380,7 +354,6 @@ const sendValidateNumber = async (req, res) => {
   const method = 'POST';
   const space = ' ';
   const newLine = '\n';
-  const url = `https://sens.apigw.ntruss.com/sms/v2/services/ncp:sms:kr:296406056304:jetabox/messages`;
   const url2 = `/sms/v2/services/ncp:sms:kr:296406056304:jetabox/messages`;
   const hmac = CryptoJS.algo.HMAC.create(CryptoJS.algo.SHA256, secretKey);
   hmac.update(method);
@@ -460,6 +433,7 @@ const sendValidateNumber2 = async (req, res) => {
     const method = 'POST';
     const space = ' ';
     const newLine = '\n';
+    const url = `https://sens.apigw.ntruss.com/sms/v2/services/ncp:sms:kr:296406056304:jetabox/messages`;
     const url2 = `/sms/v2/services/ncp:sms:kr:296406056304:jetabox/messages`;
     const hmac = CryptoJS.algo.HMAC.create(CryptoJS.algo.SHA256, secretKey);
     hmac.update(method);
@@ -513,18 +487,19 @@ const sendValidateNumber2 = async (req, res) => {
   }
 };
 
-// ---------------네이버SENS API 호출 로직 끝---------------------------- //
-
 const requestMypage = async (req, res) => {
   let { account_id } = req.body;
   const REQUIRE_KEYS = { account_id };
+
   Object.keys(REQUIRE_KEYS).map(key => {
     if (!REQUIRE_KEYS[key]) {
       error.statusCode = 400;
       throw new Error(`KEY_ERROR: ${key}`);
     }
   });
+
   const userInDB = await userService.requestMypage(account_id);
+  console.log(userInDB);
 
   let name = userInDB.name;
   let birthday = userInDB.birthday;
@@ -533,6 +508,7 @@ const requestMypage = async (req, res) => {
 
   message = `ID '${account_id}''S INFORMATION IS BEING DISPLAYED`;
   console.log(message);
+
   res.status(200).json({
     code: 200,
     message: message,
@@ -569,35 +545,32 @@ const modifyMypage = async (req, res) => {
 };
 
 const deleteAccount = async (req, res) => {
-  try {
-    //토큰으로부터 account_id 특정
-    const verifiedToken = jwt.verify(req.headers.token, process.env.SECRET_KEY);
-    const account_id = verifiedToken.account_id;
-    if (!account_id) {
-      throw new Error('VALID TOKEN NEEDED');
-    }
-    const { password } = req.body;
-    const REQUIRE_KEYS = { account_id, password };
-
-    Object.keys(REQUIRE_KEYS).map(key => {
-      if (!REQUIRE_KEYS[key]) {
-        error.statusCode = 400;
-        throw new Error(`KEY_ERROR: ${key}`);
-      }
-    });
-    await userService.deleteAccount(account_id, password);
-    message = `ID '${account_id}''S INFORMATION HAS BEEN REMOVED`;
-    console.log(message);
-
-    res.status(200).json({
-      code: 200,
-      message: message,
-      account_id: account_id,
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({ message: err.message });
+  //토큰으로부터 account_id 특정
+  const verifiedToken = jwt.verify(req.headers.token, process.env.SECRET_KEY);
+  const account_id = verifiedToken.account_id;
+  if (!account_id) {
+    throw new Error('VALID TOKEN NEEDED');
   }
+  const { password } = req.body;
+  const REQUIRE_KEYS = { account_id, password };
+
+  Object.keys(REQUIRE_KEYS).map(key => {
+    if (!REQUIRE_KEYS[key]) {
+      error.statusCode = 400;
+      throw new Error(`KEY_ERROR: ${key}`);
+    }
+  });
+
+  await userService.deleteAccount(account_id, password);
+
+  message = `ID '${account_id}''S INFORMATION HAS BEEN REMOVED`;
+  console.log(message);
+
+  res.status(200).json({
+    code: 200,
+    message: message,
+    account_id: account_id,
+  });
 };
 
 module.exports = {
