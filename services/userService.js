@@ -157,14 +157,14 @@ const signUp = async (
 const signIn = async (account_id, password) => {
   const userInDB = await userDao.userInDB(account_id);
   if (!userInDB) {
-    const error = new Error('아이디가 존재하지 않습니다.');
+    const error = new Error('NO USER DATA IN DB');
     error.statusCode = 404;
     throw error;
   }
 
   const pwSame = bcrypt.compareSync(password, userInDB.password);
   if (!pwSame) {
-    const error = new Error('패스워드가 틀렸습니다.');
+    const error = new Error('INCORRECT PASSWORD');
     error.statusCode = 400;
     throw error;
   }
@@ -175,7 +175,7 @@ const signIn = async (account_id, password) => {
 const checkIfIDExists = async account_id => {
   const userInDB = await userDao.userInDB(account_id);
   if (userInDB) {
-    const error = new Error(`이미 존재하는 아이디입니다.`);
+    const error = new Error(`ID '${account_id}' IS ALREADY BEING USED`);
     error.statusCode = 404;
     throw error;
   }
@@ -215,22 +215,24 @@ const findID = async (name, birthday, phone_number) => {
   //입력받은 전화번호의 불필요한 문자 제거
   phone_number = phone_number.replaceAll(/\D/g, '');
   if (!(phone_number[0] == 0 && phone_number[1] == 1)) {
-    throw new Error('핸드폰 번호는 01로 시작해야합니다');
+    throw new Error('PHONE NUMBER IS INVALD : SHOULD BE 01*~');
   }
   if (!(phone_number.length === 10 || phone_number.length === 11)) {
-    throw new Error('핸드폰 번호가 유효하지 않습니다.');
+    throw new Error('PHONE NUMBER IS INVALD : LENGTH');
   }
   //--------------전화번호검증로직끝----------------//
+
+  // if (
+  //   !userByPhoneNumber ||
+  //   userByPhoneNumber.name !== name ||
+  //   userByPhoneNumber.birthday !== birthday
+  // ) {
+  //   throw new Error('일치하는 정보가 없습니다');
+  // }
   const userByPhoneNumber = await userDao.IDInDB(name, birthday, phone_number);
-
-  if (
-    !userByPhoneNumber ||
-    userByPhoneNumber.name !== name ||
-    userByPhoneNumber.birthday !== birthday
-  ) {
-    throw new Error('일치하는 정보가 없습니다');
+  if (!userByPhoneNumber) {
+    throw new Error('NO USER IN DB');
   }
-
   return userByPhoneNumber;
 };
 
@@ -241,7 +243,7 @@ const userCheckforValidateNumber = async (account_id, name, phone_number) => {
     phone_number
   );
   if (!userInfo) {
-    throw new Error('일치하는 정보가 없습니다.');
+    throw new Error('INVALID ID, NAME, PHONE NUMBER');
   }
   return userInfo;
 };
@@ -251,7 +253,7 @@ const resetPassword1 = async (account_id, password, passwordForCheck) => {
   //--------------비밀번호검증로직시작----------------//
   //비밀번호가 일치하지 않을 경우 오류 발생
   if (password !== passwordForCheck) {
-    throw new Error('비밀번호가 일치하지 않습니다');
+    throw new Error('PASSWORDS DO NOT MATCH');
   }
 
   //비밀번호를 구성하는 변수 종류를 variablesCount으로 측정
@@ -274,7 +276,7 @@ const resetPassword1 = async (account_id, password, passwordForCheck) => {
     password.search(noEngNumSpeReg) !== -1
   ) {
     throw new Error(
-      '비밀번호는 영문, 숫자, 특수문자 중 2가지 이상 조합 6자리 이상 20자리 이하로 설정해주세요'
+      'PASSWORD MUST HAVE AT LEAST TWO ELEMENTS BETWEEN ENGLISH & SPECIAL CHARACTERS, NUMBERS'
     );
   }
 
@@ -285,7 +287,12 @@ const resetPassword1 = async (account_id, password, passwordForCheck) => {
 };
 
 //비밀번호 재설정
-const resetPassword2 = async (account_id, password, password_new, passwordForCheck_new) => {
+const resetPassword2 = async (
+  account_id,
+  password,
+  password_new,
+  passwordForCheck_new
+) => {
   const userInDB = await userDao.userInDB(account_id);
   if (!userInDB) {
     const error = new Error('NO USER DATA IN DB');
@@ -301,7 +308,7 @@ const resetPassword2 = async (account_id, password, password_new, passwordForChe
   //--------------비밀번호검증로직시작----------------//
   //비밀번호가 일치하지 않을 경우 오류 발생
   if (password_new !== passwordForCheck_new) {
-    throw new Error('비밀번호가 일치하지 않습니다');
+    throw new Error('INCORRECT PASSWORD');
   }
   //비밀번호를 구성하는 변수 종류를 variablesCount으로 측정
   let variablesCount = 0;
@@ -323,7 +330,7 @@ const resetPassword2 = async (account_id, password, password_new, passwordForChe
     password_new.search(noEngNumSpeReg) !== -1
   ) {
     throw new Error(
-      '비밀번호는 영문, 숫자, 특수문자 중 2가지 이상 조합 6자리 이상 20자리 이하로 설정해주세요'
+      'PASSWORD MUST HAVE AT LEAST TWO ELEMENTS BETWEEN ENGLISH & SPECIAL CHARACTERS, NUMBERS'
     );
   }
 
@@ -350,13 +357,13 @@ const modifyMypage = async (account_id, email) => {
 const deleteAccount = async (account_id, password) => {
   const userInDB = await userDao.userInDB(account_id);
   if (!userInDB) {
-    const error = new Error('아이디가 존재하지 않습니다.');
+    const error = new Error('NO USER DATA IN DB');
     error.statusCode = 404;
     throw error;
   }
   const pwSame = bcrypt.compareSync(password, userInDB.password);
   if (!pwSame) {
-    const error = new Error('비밀번호가 일치하지 않습니다');
+    const error = new Error('INCORRECT PASSWORD');
     error.statusCode = 400;
     throw error;
   }

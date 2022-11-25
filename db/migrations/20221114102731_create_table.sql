@@ -40,7 +40,7 @@ CREATE TABLE `movie_type_properties` (
     `movie_type` varchar(20) COMMENT 'ex) 2D, 3D'
 );
 
-CREATE TABLE `likes` (
+CREATE TABLE `like` (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `user_id` int COMMENT '유저 아이디',
     `movie_id` int COMMENT '영화 이름',

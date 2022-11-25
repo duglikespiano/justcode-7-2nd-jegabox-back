@@ -5,14 +5,19 @@ const getMainMovies = async token => {
   let likecnt;
   let user_id;
   let existLike;
-  if (!token) {
-    likecnt = `LEFT JOIN (SELECT movie_id, count(*) AS likeCnt FROM jegabox.like WHERE user_id = 0 GROUP BY movie_id) AS lct ON movie.id = lct.movie_id`;
-  } else {
-    const user = jwt.verify(token, process.env.SECRET_KEY);
-    user_id = user.id;
-    likecnt = `LEFT JOIN (SELECT movie_id, count(*) AS likeCnt FROM jegabox.like WHERE user_id = ${user_id} GROUP BY movie_id) AS lct ON movie.id = lct.movie_id`;
-  }
+
+  // if (token == 'null') {
+  //   likecnt = `LEFT JOIN (SELECT movie_id, count(*) AS likeCnt FROM jegabox.like WHERE user_id = 0 GROUP BY movie_id) AS lct ON movie.id = lct.movie_id`;
+  // }
+
+  likecnt = `LEFT JOIN (SELECT movie_id, count(*) AS likeCnt FROM jegabox.like WHERE user_id = 0 GROUP BY movie_id) AS lct ON movie.id = lct.movie_id`;
+
+  // const user = jwt.verify(token, process.env.SECRET_KEY);
+  // user_id = user.id;
+  // likecnt = `LEFT JOIN (SELECT movie_id, count(*) AS likeCnt FROM jegabox.like WHERE user_id = ${user_id} GROUP BY movie_id) AS lct ON movie.id = lct.movie_id`;
+
   const mainMovies = await movieDao.getMainMovies(likecnt);
+
   if (user_id !== undefined) {
     existLike = await movieDao.existLike(user_id);
   }

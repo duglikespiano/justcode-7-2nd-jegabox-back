@@ -1,7 +1,9 @@
 const database = require('./database');
 
 const getMainMovies = async likecnt => {
-  const getMainMovies = await database.query(`
+  const getMainMovies = await database
+    .query(
+      `
       SELECT
         movie.id,
         movie.ko_title,
@@ -48,16 +50,21 @@ const getMainMovies = async likecnt => {
         GROUP BY movie_type.movie_id) AS mtt ON movie.id = mtt.movie_id 
       ORDER BY id
       LIMIT 5
-    `).then(answer => {
+    `
+    )
+    .then(answer => {
       return [...answer].map(unit => {
-        return { ...unit, cnt: Number(unit.cnt), type: JSON.parse(unit.type) };
-      })
+        return { ...unit, cnt: Number(unit.cnt), type: unit.type };
+        // return { ...unit, cnt: Number(unit.cnt), type: JSON.parse(unit.type) };
+      });
     });
   return getMainMovies;
 };
 
 const getAllMovies = async (likecnt, release) => {
-  const getAllMovies = await database.query(`
+  const getAllMovies = await database
+    .query(
+      `
     SELECT
       movie.id,
       movie.ko_title,
@@ -102,16 +109,20 @@ const getAllMovies = async (likecnt, release) => {
         movie_type_properties ON movie_type.movie_type_properties_id = movie_type_properties.id
       GROUP BY movie_type.movie_id) AS mtt ON movie.id = mtt.movie_id
     ${release}
-    `).then(answer => {
+    `
+    )
+    .then(answer => {
       return [...answer].map(unit => {
         return { ...unit, cnt: Number(unit.cnt), type: JSON.parse(unit.type) };
-      })
+      });
     });
   return getAllMovies;
 };
 
 const getComingsoonMovies = async (likecnt, sorted_by) => {
-  const comingsoonMovie = await database.query(`
+  const comingsoonMovie = await database
+    .query(
+      `
     SELECT
       movie.id,
       movie.ko_title,
@@ -160,16 +171,20 @@ const getComingsoonMovies = async (likecnt, sorted_by) => {
     WHERE
       DATE_FORMAT(release_date,'%Y-%m-%d') >  DATE_FORMAT('2022-11-16','%Y-%m-%d')
     ${sorted_by}
-    `).then(answer => {
+    `
+    )
+    .then(answer => {
       return [...answer].map(unit => {
         return { ...unit, cnt: Number(unit.cnt), type: JSON.parse(unit.type) };
-      })
+      });
     });
   return comingsoonMovie;
 };
 
 const searchText = async (likecnt, searchText) => {
-  const result = await database.query(`
+  const result = await database
+    .query(
+      `
     SELECT
       movie.id,
       movie.ko_title,
@@ -217,16 +232,20 @@ const searchText = async (likecnt, searchText) => {
       GROUP BY movie_type.movie_id) AS mtt ON movie.id = mtt.movie_id
     WHERE
       movie.ko_title like '%${searchText}%'
-  `).then(answer => {
-    return [...answer].map(unit => {
-      return { ...unit, cnt: Number(unit.cnt), type: JSON.parse(unit.type) };
-    })
-  });
+  `
+    )
+    .then(answer => {
+      return [...answer].map(unit => {
+        return { ...unit, cnt: Number(unit.cnt), type: JSON.parse(unit.type) };
+      });
+    });
   return result;
 };
 
 const searchTitle = async (likecnt, searchTitle) => {
-  const result = await database.query(`
+  const result = await database
+    .query(
+      `
     SELECT
       movie.id,
       movie.ko_title,
@@ -273,16 +292,20 @@ const searchTitle = async (likecnt, searchTitle) => {
       GROUP BY movie_type.movie_id) AS mtt ON movie.id = mtt.movie_id
     WHERE
       movie.ko_title like '%${searchTitle}%'
-    `).then(answer => {
+    `
+    )
+    .then(answer => {
       return [...answer].map(unit => {
         return { ...unit, cnt: Number(unit.cnt), type: JSON.parse(unit.type) };
-      })
+      });
     });
   return result;
 };
 
 async function getMovieDetail(likecnt, id) {
-  const [result] = await database.query(`
+  const [result] = await database
+    .query(
+      `
     SELECT
       movie.id,
       movie.ko_title,
@@ -331,11 +354,13 @@ async function getMovieDetail(likecnt, id) {
       GROUP BY movie_type.movie_id) AS mtt ON movie.id = mtt.movie_id
     WHERE
       movie.id = ${id}
-    `).then(answer => {
-        return [...answer].map(unit => {
-          return { ...unit, cnt: Number(unit.cnt), type: JSON.parse(unit.type) }
-        })
-  });
+    `
+    )
+    .then(answer => {
+      return [...answer].map(unit => {
+        return { ...unit, cnt: Number(unit.cnt), type: JSON.parse(unit.type) };
+      });
+    });
   return result;
 }
 
@@ -351,7 +376,6 @@ async function existLike(id) {
   `);
   return rtn;
 }
-
 
 module.exports = {
   getMainMovies,

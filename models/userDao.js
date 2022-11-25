@@ -31,6 +31,7 @@ const userInDB = async account_id => {
 
 //전화번호 DB등록 여부 확인
 const checkIfPhoneNumberExists = async phone_number => {
+  console.log(phone_number);
   const [userByPhoneNumber] = await database.query(`
     SELECT
       *
@@ -50,9 +51,13 @@ const IDInDB = async (name, birthday, phone_number) => {
     FROM
       user
     WHERE
+    name = '${name}'
+      AND
+      birthday = '${birthday}'
+      AND
       phone_number = '${phone_number}'
   `);
-
+  console.log(userByPhoneNumber);
   return userByPhoneNumber;
 };
 
@@ -103,24 +108,40 @@ const modifyMypage = async (account_id, email) => {
 
 //계정삭제API
 const deleteAccount = async account_id => {
-  await myDataSource.query(`
+  await database.query(`
     SET foreign_key_checks = 0
   `);
-  await myDataSource.query(`
+  await database.query(`
     DELETE FROM
-      USERS
+      user
     WHERE
-      id = '${account_id}'
+    account_id = '${account_id}'
   `);
+};
+
+//전화번호 DB등록 여부 확인(아이디로 전화번호 확인))
+const checkIfPhoneNumberExists2 = async account_id => {
+  const [userByPhoneNumber] = await database.query(`
+    SELECT * FROM user WHERE account_id = '${account_id}' 
+  `);
+  return userByPhoneNumber;
+};
+
+//마이페이지에서 전화번호 변경 API
+const modifyPhoneNumber = async (account_id, phone_number) => {
+  await database.query(`
+  UPDATE user SET phone_number ='${phone_number}' WHERE account_id = '${account_id}'`);
 };
 
 module.exports = {
   signUp,
   userInDB,
   checkIfPhoneNumberExists,
+  checkIfPhoneNumberExists2,
   IDInDB,
   userCheckforValidateNumber,
   resetPassword,
   modifyMypage,
   deleteAccount,
+  modifyPhoneNumber,
 };

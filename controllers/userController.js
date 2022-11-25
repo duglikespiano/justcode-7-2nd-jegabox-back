@@ -51,20 +51,36 @@ const signIn = async (req, res) => {
   let { account_id, password } = req.body;
   const REQUIRE_KEYS = { account_id, password };
 
-
   Object.keys(REQUIRE_KEYS).map(key => {
     if (!REQUIRE_KEYS[key]) {
       throw new Error(`KEY_ERROR: ${key}`);
     }
   });
-
-  const token = await userService.signIn(account_id, password);
+  const userInDB = await userService.signIn(account_id, password);
+  account_id = userInDB.account_id;
+  const id = userInDB.id;
+  const name = userInDB.name;
+  const phone_number = userInDB.phone_number;
   let message = `USER '${account_id}' SIGNED IN`;
+  const token = jwt.sign(
+    {
+      type: 'JWT',
+      account_id: account_id,
+      id: id,
+    },
+    process.env.SECRET_KEY,
+    {
+      expiresIn: '30000000000000000000m', // 만료시간 30분
+      issuer: 'Jegabox',
+    }
+  );
   res.status(200).json({
     code: 200,
     account_id: account_id,
-    phone_number: token.phone_number,
+    phone_number: phone_number,
     message: message,
+    name: name,
+    id: id,
     token: token,
   });
 };
@@ -112,13 +128,14 @@ const findID = async (req, res) => {
   let created_at_result = JSON.stringify(created_at);
   created_at_result = created_at_result.slice(1, 11);
   account_id = userByPhoneNumber.account_id;
+
   message = `USER ID is '${account_id}'`;
   console.log(message);
 
   res.status(200).json({
     code: 200,
     message: message,
-    userID: account_id,
+    account_id: account_id,
     created_at: created_at_result,
   });
 };
@@ -213,7 +230,7 @@ const checkValidateNumber = async (req, res) => {
     throw new Error('인증 시간이 만료되었습니다.');
   }
   console.log(validateNumber);
-  if (myCache.get('randomNumberObj').randomNumber !== validateNumber) {
+  if (myCache.get('randomNumberObj').randomNumber != validateNumber) {
     // 사용자가 입력한 인증번호와 캐쉬 내 인증번호가 다를 경우 에러 발생
     throw new Error('인증번호가 틀립니다.');
   }
